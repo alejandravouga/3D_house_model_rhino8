@@ -1,0 +1,61 @@
+---
+title: "3D_house_model_rhino8"
+author: "Alejandra Vouga"
+date: "2026-04-09"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+# 1. Install necessary packages (if not already installed)
+if (!require("plotly")) install.packages("plotly")
+if (!require("readobj")) install.packages("readobj")
+
+# 2. Load the libraries
+library(plotly)
+library(readobj)
+
+# 3. Set your folder as the working directory
+setwd("~/Desktop/github")
+
+# 4. Define the path and load the model
+obj_path <- "house_model.obj"
+house_data <- read.obj(obj_path)
+
+# 5. Extract components for the 3D plot
+# We loop through the 'shapes' in your OBJ to build the house
+fig <- plot_ly()
+
+for (s in 1:length(house_data$shapes)) {
+  shape <- house_data$shapes[[s]]
+  
+  fig <- fig %>% add_trace(
+    type = 'mesh3d',
+    x = shape$positions[1,],
+    y = shape$positions[2,],
+    z = shape$positions[3,],
+    i = shape$indices[1,],
+    j = shape$indices[2,],
+    k = shape$indices[3,],
+    opacity = 1,
+    name = paste("Part", s)
+  )
+}
+
+# 6. Final Layout and Viewing Adjustment
+fig <- fig %>% layout(
+  scene = list(
+    aspectmode = "data", # Keeps the house shape from stretching
+    xaxis = list(visible = FALSE),
+    yaxis = list(visible = FALSE),
+    zaxis = list(visible = FALSE)
+  )
+)
+
+# 7. Show the interactive model in the RStudio Viewer tab
+fig
+
+
+```
+
